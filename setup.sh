@@ -4,8 +4,6 @@ elasticuser="$1"
 elasticpass="$2"
 
 echo "=== Updating logstash_system user's password"
-# We need to setup the logstash_system user's password once the cluster has been created
-# For demo purposes, we'll use the same password as the elasticsearch password
 curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/user/logstash_system/_password' -d\
 '{
   "password": "'"${elasticpass}"'"
@@ -13,11 +11,9 @@ curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/
 echo "\n=== Done\n"
 
 echo "=== Uncompressing data files"
-# Uncompressed the test data files
 unzip -o data/accounts.zip -d data
 gunzip -f -k data/logs.jsonl.gz
 echo "=== Done\n"
-
 
 echo "=== Creating mappings"
 curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/json' 'localhost:9200/shakespeare' -d\
@@ -55,8 +51,49 @@ curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/
 done
 echo "=== Done\n"
 
-echo "=== Upload test data"
+echo "=== Uploading test data"
 curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/x-ndjson' 'localhost:9200/bank/account/_bulk?pretty' --data-binary @data/accounts.json
 curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/x-ndjson' 'localhost:9200/shakespeare/doc/_bulk?pretty' --data-binary @data/shakespeare_6.0.json
 curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/x-ndjson' 'localhost:9200/_bulk?pretty' --data-binary @data/logs.jsonl
 echo "=== Done\n"
+
+echo "=== Creating test roles"
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_RO_all' -d\
+'{
+  "indices": [
+    {
+      "names": [ "bank*" ],
+      "privileges": [ "read" ]
+    }
+  ]
+}' && echo ""
+
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_RO_NO-Balance' -d\
+'{
+  "indices": [
+    {
+      "names": [ "bank*" ],
+      "privileges": [ "read" ],
+      "field_security": {
+        "grant": [ "*" ],
+        "except": [ "balance" ]
+      }
+    }
+  ]
+}' && echo ""
+
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_RO_ONLY-ME-STATE' -d\
+'{
+  "indices": [
+    {
+      "names": [ "bank*" ],
+      "privileges": [ "read" ],
+      "query": "{\"match\": {\"state\": \"ME\"}}"
+    }
+  ]
+}' && echo ""
+echo "=== Done\n"
+
+#echo "=== Creating test users"
+
+#echo "=== Done\n"
