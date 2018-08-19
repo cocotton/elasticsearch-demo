@@ -9,3 +9,7 @@ curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/
 '{
   "password": "'"${elasticpass}"'"
 }'
+
+# Uncompressed the test data files
+unzip data/accounts.zip -d data
+gunzip data/logs.jsonl.gz
