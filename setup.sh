@@ -11,5 +11,5 @@ curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/
 }'
 
 # Uncompressed the test data files
-unzip -f data/accounts.zip -d data
+unzip -o data/accounts.zip -d data
 gunzip -f -k data/logs.jsonl.gz
