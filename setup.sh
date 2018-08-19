@@ -58,7 +58,7 @@ curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application
 echo "=== Done\n"
 
 echo "=== Creating test roles"
-curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_RO_all' -d\
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_ro' -d\
 '{
   "indices": [
     {
@@ -68,7 +68,7 @@ curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application
   ]
 }' && echo ""
 
-curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_RO_NO-Balance' -d\
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_ro_no-balance' -d\
 '{
   "indices": [
     {
@@ -82,7 +82,7 @@ curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application
   ]
 }' && echo ""
 
-curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_RO_ONLY-ME-STATE' -d\
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/role/bank_ro_me-state' -d\
 '{
   "indices": [
     {
@@ -94,6 +94,40 @@ curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application
 }' && echo ""
 echo "=== Done\n"
 
-#echo "=== Creating test users"
+echo "=== Creating test users"
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/user/bank_ro' -d\
+'{
+  "username": "bank_ro",
+  "password": "bank_ro",
+  "roles": [
+    "kibana_user",
+    "bank_ro"
+  ],
+  "full_name": "Bank RO",
+  "email": "test@test.test"
+}' && echo ""
 
-#echo "=== Done\n"
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/user/bank_ro_no-balance' -d\
+'{
+  "username": "bank_ro_no-balance",
+  "password": "bank_ro_no-balance",
+  "roles": [
+    "kibana_user",
+    "bank_ro_no-balance"
+  ],
+  "full_name": "Bank RO No Balance",
+  "email": "test@test.test"
+}' && echo ""
+
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/json' 'localhost:9200/_xpack/security/user/bank_ro_me-state' -d\
+'{
+  "username": "bank_ro_me-state",
+  "password": "bank_ro_me-state",
+  "roles": [
+    "kibana_user",
+    "bank_ro_me-state"
+  ],
+  "full_name": "Bank RO ME State",
+  "email": "test@test.test"
+}' && echo ""
+echo "=== Done\n"
