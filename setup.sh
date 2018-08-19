@@ -54,3 +54,9 @@ curl --user "${elasticuser}:${elasticpass}" -XPUT -H 'Content-Type: application/
 }' && echo ""
 done
 echo "=== Done\n"
+
+echo "=== Upload test data"
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/x-ndjson' 'localhost:9200/bank/account/_bulk?pretty' --data-binary @data/accounts.json
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/x-ndjson' 'localhost:9200/shakespeare/doc/_bulk?pretty' --data-binary @data/shakespeare_6.0.json
+curl --user "${elasticuser}:${elasticpass}" -XPOST -H 'Content-Type: application/x-ndjson' 'localhost:9200/_bulk?pretty' --data-binary @data/logs.jsonl
+echo "=== Done\n"
