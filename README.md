@@ -12,3 +12,6 @@
 - Docker
 - docker-compose
 - unzip
+
+### Impersonation
+https://www.elastic.co/blog/user-impersonation-with-x-pack-integrating-third-party-auth-with-kibana
